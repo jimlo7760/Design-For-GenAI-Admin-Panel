@@ -156,7 +156,7 @@ test/                    Unit tests, and db/ for the database tests
 ## Notes and limits
 
 - Next.js 16 differs from earlier releases (`proxy.js` replaces `middleware.js`, `cookies()` and `searchParams` are async, error boundaries get `retry`). The docs for the installed version are in `node_modules/next/dist/docs/`.
-- `@supabase/ssr` is pinned to `0.12.0`, the same as Mod Squad.
+- `@supabase/ssr` (0.12.0) and `@supabase/supabase-js` (2.109.0) are pinned to exactly what Mod Squad uses. `supabase-js` 2.110 and later require Node 22, so a loose version range would make `npm install` warn on Node 20 (and `package.json` allows Node 20.9 and up).
 - "New media" creates a build by hand. It does not call the AI; Mod Squad's generator remains the place that does.
 - Deleting a build also deletes its render file from Storage. It does not delete the owner's own uploaded car photo or the Wikimedia reference link.
 - The owner picker on New media lists up to 1,000 users.
