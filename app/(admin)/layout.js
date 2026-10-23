@@ -15,8 +15,8 @@ export default async function AdminLayout({ children }) {
             </main>
             <footer className="site-footer">
                 <div className="container container--wide site-footer__inner">
-                    <span className="site-footer__name">Pit Wall</span>
-                    <span>Mod Squad admin · Signed in as {user.email} · Everything you do here is checked by the database, not just by this page</span>
+                    <span className="site-footer__name">Mod Squad Admin</span>
+                    <span>Signed in as {user.email} · Everything you do here is checked by the database, not just by this page</span>
                 </div>
             </footer>
         </>

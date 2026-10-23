@@ -10,7 +10,7 @@ export default function NotFound() {
                     <div className="empty">
                         <h2>We couldn&apos;t find that</h2>
                         <p>The page you&apos;re looking for doesn&apos;t exist, or it was deleted.</p>
-                        <Link href="/" className="btn btn--primary">Back to the pit wall</Link>
+                        <Link href="/" className="btn btn--primary">Back to the dashboard</Link>
                     </div>
                 </div>
             </div>

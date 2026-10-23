@@ -13,7 +13,7 @@ export default function Header({ user, profile }) {
                 <Link href="/" className="brand">
                     <WheelMark className="brand__wheel" />
                     <span className="brand__word">Mod <span className="brand__accent">Squad</span></span>
-                    <span className="plate plate--sm">Pit wall</span>
+                    <span className="plate plate--sm">Admin</span>
                 </Link>
 
                 <NavLinks />

@@ -1,4 +1,4 @@
-# Mod Squad Pit Wall
+# Mod Squad Admin
 
 The admin area for [Mod Squad](https://github.com/jimlo7760/Mod-Squad), the app where people describe a car and a vibe, an AI designs the build, and the community votes on it. It was built for the Columbia course *Design for GenAI* (Week 6: Admin Panel).
 

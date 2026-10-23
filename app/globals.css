@@ -1,4 +1,4 @@
-/* Pit Wall: the Mod Squad admin area. Same garage at night as the main app (warm paper and asphalt,
+/* Mod Squad Admin. Same garage at night as the main app (warm paper and asphalt,
    signal orange, race-flag green and red, condensed motorsport type), tuned for dense data:
    a dark telemetry strip, tabular numbers, hairline charts. Light by default, dark when the
    visitor's system prefers it. Tokens first, then base, layout, components, charts. */
@@ -350,7 +350,7 @@ code { padding: 0.05em 0.35em; border-radius: 2px; background: var(--surface-2);
 
 .brand__accent { color: var(--accent); }
 
-/* A licence plate: this is the pit wall, not the public app. */
+/* A licence plate: this is the admin area, not the public app. */
 .plate {
     display: inline-block;
     padding: 0.15rem 0.7rem;

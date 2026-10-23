@@ -16,7 +16,7 @@ export default async function LoginPage({ searchParams }) {
             <section className="gate" aria-labelledby="gate-title">
                 <WheelMark className="gate__wheel" />
                 <div className="container gate__inner">
-                    <span className="plate">Pit wall</span>
+                    <span className="plate">Admin</span>
                     <h1 id="gate-title">
                         Staff only. <span className="gate__accent">Badge in.</span>
                     </h1>

@@ -14,8 +14,8 @@ const headingItalic = Barlow_Condensed({
 
 export const metadata = {
     title: {
-        default: 'Pit Wall · Mod Squad admin',
-        template: '%s · Pit Wall',
+        default: 'Mod Squad Admin',
+        template: '%s · Mod Squad Admin',
     },
     description: 'Admin area for Mod Squad: statistics, users, AI-generated builds and votes.',
     robots: { index: false, follow: false },

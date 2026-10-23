@@ -26,7 +26,7 @@ export default async function DashboardPage() {
             <div className="container container--wide dash">
                 <header className="page-head">
                     <div>
-                        <h1>Pit wall</h1>
+                        <h1>Mod Squad Admin</h1>
                         <p>Live telemetry from the Mod Squad garage: who is building, what the AI is making, and how the squad is judging it.</p>
                     </div>
                     <p className="freshness">
