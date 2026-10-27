@@ -2,34 +2,26 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-const LINKS = [
-    { href: '/', label: 'Dashboard' },
-    { href: '/users', label: 'Users' },
-    { href: '/media', label: 'Media' },
-    { href: '/votes', label: 'Votes' },
-];
-
-function isCurrent(pathname, href) {
-    if (href === '/') return pathname === '/';
-    return pathname === href || pathname.startsWith(`${href}/`);
-}
+import { NAV, groupHref, isCurrent } from '../lib/nav';
 
 export default function NavLinks() {
     const pathname = usePathname();
 
     return (
         <nav className="nav" aria-label="Main">
-            {LINKS.map((link) => (
-                <Link
-                    key={link.href}
-                    href={link.href}
-                    className="nav__link"
-                    aria-current={isCurrent(pathname, link.href) ? 'page' : undefined}
-                >
-                    {link.label}
-                </Link>
-            ))}
+            {NAV.map((entry) => {
+                const current = entry.items ? entry.items.some((item) => isCurrent(pathname, item.href)) : isCurrent(pathname, entry.href);
+                return (
+                    <Link
+                        key={entry.label}
+                        href={groupHref(entry)}
+                        className="nav__link"
+                        aria-current={current ? 'page' : undefined}
+                    >
+                        {entry.label}
+                    </Link>
+                );
+            })}
             <Link
                 href="/media/new"
                 className="nav__cta"

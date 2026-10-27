@@ -1186,3 +1186,54 @@ select.input { padding-right: 2rem; }
 .chart-table summary { width: max-content; color: var(--accent-ink); cursor: pointer; font-weight: 600; }
 .chart-table .table-wrap { max-height: 18rem; margin-top: 0.5rem; border: 1px solid var(--line); border-radius: var(--radius-sm); }
 .chart-table .table th, .chart-table .table td { padding: 0.4rem 0.7rem; }
+
+
+/* Week 7 sections ------------------------------------------------------------ */
+
+/* The second row of the header: the pages inside the group you are in. */
+.subnav {
+    display: flex;
+    gap: 0.15rem;
+    padding-block: 0.1rem 0.55rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.subnav::-webkit-scrollbar { display: none; }
+
+.subnav__link {
+    padding: 0.2rem 0.75rem;
+    border-radius: var(--radius-sm);
+    color: var(--header-muted);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.subnav__link:hover { color: var(--header-ink); }
+.subnav__link[aria-current='page'] { background: rgb(243 239 227 / 16%); color: var(--header-ink); }
+
+/* A checkbox with its label beside it. */
+.check { display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 600; cursor: pointer; }
+.check input { width: 1.2rem; height: 1.2rem; accent-color: var(--accent-ink); }
+
+/* Long text in a list is cut to a couple of lines; the full text is in the cell's title and on the detail page. */
+.cell-long { display: block; max-width: 28rem; overflow-wrap: anywhere; color: var(--muted); }
+
+/* A share of the whole as a small bar with the percentage next to it (the chain mix). */
+.meter-cell { display: inline-flex; align-items: center; gap: 0.6rem; }
+.meter { display: inline-block; width: 7rem; height: 12px; border-radius: 0 3px 3px 0; background: var(--track); overflow: hidden; }
+.meter__fill { display: block; height: 100%; width: var(--w, 0%); min-width: 2px; background: var(--c1); }
+
+/* The Images page. */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gallery__item { display: grid; gap: 0.9rem; align-content: space-between; }

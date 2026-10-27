@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Avatar from './Avatar';
 import NavLinks from './NavLinks';
+import SubNav from './SubNav';
 import WheelMark from './WheelMark';
 import { displayName } from '../lib/auth';
 
@@ -28,6 +29,7 @@ export default function Header({ user, profile }) {
                     </form>
                 </div>
             </div>
+            <SubNav />
         </header>
     );
 }

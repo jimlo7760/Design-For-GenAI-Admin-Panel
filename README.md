@@ -1,6 +1,6 @@
 # Mod Squad Admin
 
-The admin area for [Mod Squad](https://github.com/jimlo7760/Mod-Squad), the app where people describe a car and a vibe, an AI designs the build, and the community votes on it. It was built for the Columbia course *Design for GenAI* (Week 6: Admin Panel).
+The admin area for [Mod Squad](https://github.com/jimlo7760/Mod-Squad), the app where people describe a car and a vibe, an AI designs the build, and the community votes on it. It was built for the Columbia course *Design for GenAI*: Week 6 (Admin Panel) and Week 7 (Admin Panel with More Observability).
 
 It talks to the **same Supabase project** as Mod Squad. Everything in it is behind a Google login, and only people whose profile has `is_superadmin = true` get past that.
 
@@ -18,6 +18,35 @@ It talks to the **same Supabase project** as Mod Squad. Everything in it is behi
 | Every route behind a Google login | `proxy.js`, `requireAdmin()` on every page and action, and the database itself |
 
 Users and votes are read-only on purpose: people edit their own profiles in Mod Squad, and votes belong to the people who cast them.
+
+### Week 7 additions
+
+| Assignment requirement | Where | What it can do |
+| --- | --- | --- |
+| Read users | `/users` | read (Week 6) |
+| Read prompt chains | `/prompt-chains` | read; a chain's page lists its steps and examples |
+| Read prompt chain steps | `/prompt-chain-steps` | read; `?chain=` filters to one chain |
+| Read / update prompt chain mix | `/prompt-chain-mix` | read, and update the **weight** (each chain's share is worked out from the weights) |
+| Create / read / update / delete terms | `/terms` | create, read, update, delete |
+| Read / view AI-generated media | `/media` | read (Week 6), plus the picture gallery at `/images` |
+| Read generation requests | `/generation-requests` | read |
+| Create / read / update / delete AI generation examples | `/generation-examples` | create, read, update, delete |
+| Create / read / update / delete LLM models | `/llm-models` | create, read, update, delete |
+| Create / read / update / delete LLM providers | `/llm-providers` | create, read, update, delete (a provider with models cannot be deleted) |
+| Read LLM responses | `/llm-responses` | read; text answers show the text, image answers show the picture |
+| Create / read / update / delete allowed signup domains | `/allowed-signup-domains` | create, read, update, delete (saved in lower case) |
+| Create / read / update / delete whitelisted email addresses | `/whitelisted-emails` | create, read, update, delete (saved in lower case) |
+| Images: create / read / update / delete, including upload | `/images` and `/media/[id]/edit` | the gallery lists every picture; upload, replace and remove an AI render on the build's edit page (Week 6) |
+
+The menu is grouped (Media, Prompts, Models, Terms, Access) with the pages of the group you are in shown in a second row.
+
+**How it is built.** The eleven new sections share one set of pages (`app/(admin)/[resource]/`: list, detail, new, edit) and one set of Server Actions. `lib/resources.js` describes each section once: its table, which of create / update / delete it offers, its columns, its form fields and its sort options. A section that is read-only has no New, Edit or Delete button and no route for them, and the database offers it no write rights either (see below), so there are three agreeing locks: the interface, the Server Action (which refuses an operation the section does not list) and the grants in `supabase/week7.sql`. A test reads the grants out of the SQL file and checks they match what the interface offers.
+
+**Generation requests and LLM responses are views, not copies.** Mod Squad keeps the prompt, the model and the result on the build itself, so these two sections are read-only views over `builds` (`supabase/week7.sql`, section 9). They are always current and there is nothing to keep in sync. Two consequences: a request that failed before a build was saved leaves nothing to show, and builds made by hand in the admin panel without a prompt, and renders uploaded by an admin, are not counted as AI output.
+
+**Signup domains and whitelisted emails are lists.** This panel manages them. Supabase decides who may sign in, so using the lists to gate sign-in (an auth hook, or a check in Mod Squad's callback) is a separate step.
+
+**Prompt chains and their steps are read-only here**, as the assignment asks, so they are created in the Supabase SQL editor. `supabase/week7_sample_data.sql` adds example ones.
 
 ## The lockout question
 
@@ -64,6 +93,18 @@ Run `supabase/admin.sql` once in the Supabase **SQL Editor**, *after* all of Mod
 - `admin_users()` (users with emails, last sign-in and activity counts), `admin_votes()` (the vote log), `admin_create_build()` and `admin_update_build()`
 
 Then make yourself the first admin (see [the lockout question](#the-lockout-question)).
+
+**Week 7.** Run `supabase/week7.sql` in the same way, *after* `admin.sql` (it uses `is_superadmin()` and it needs Postgres 15 or newer, which every current Supabase project has). It is safe to re-run, and it adds:
+
+- the tables `llm_providers`, `llm_models`, `prompt_chains`, `prompt_chain_steps`, `prompt_chain_mix`, `terms`, `generation_examples`, `allowed_signup_domains` and `whitelisted_emails`, with check constraints (lengths, lower-case domains and emails, `http(s)` links, weights from 0 to 1000)
+- a trigger that gives every new chain its mix row, and one that keeps `updated_at` honest
+- row-level security on all of them: only a superadmin can read, and each table grants exactly the verbs in the table above (for example nothing can insert into or delete from `prompt_chains`, and only the `weight` column of `prompt_chain_mix` can be updated)
+- the two views `generation_requests` and `llm_responses`
+- the AI models Mod Squad has already used, registered in `llm_models` (provider left empty: pick it on the Models page)
+
+If a Week 7 page says its tables are not in the database yet, this is the step that is missing.
+
+*Optional:* `supabase/week7_sample_data.sql` adds example providers, chains and steps, a 70/30 mix, terms, generation examples and one signup domain, so the new pages have something to show. They are examples written for the demo (not a record of how Mod Squad's generator is configured), and it is safe to re-run.
 
 Mod Squad's per-user limits still apply when an admin acts for someone (10 builds and 5 renders per person per 24 hours), because they live in the database.
 
@@ -125,9 +166,9 @@ The statistics live in `lib/stats.js` as pure functions with their own tests. Th
 npm test
 ```
 
-runs the unit tests (statistics, parts-list validation, search sanitising, render paths, number and date formatting, chart geometry).
+runs the unit tests (statistics, parts-list validation, search sanitising, render paths, number and date formatting, chart geometry, and for Week 7: the form validation for every field type, the error messages, the section configuration, the menu, and that what each section offers matches what `supabase/week7.sql` grants).
 
-`test/db/` tests the database side against a throwaway local Postgres (developed against 16): it loads Mod Squad's real SQL files, applies `supabase/admin.sql` twice, then tries to break in as a normal user (promote themselves by `update`, by upsert, through an admin function, delete or edit someone else's build, read other people's votes), and checks that Mod Squad's own profile form still works afterwards.
+`test/db/` tests the database side against a throwaway local Postgres (developed against 16): it loads Mod Squad's real SQL files, applies `supabase/admin.sql` and `supabase/week7.sql` twice each, then tries to break in as a normal user (promote themselves by `update`, by upsert, through an admin function, delete or edit someone else's build, read other people's votes, read or write any Week 7 table or view), and checks that Mod Squad's own profile form still works afterwards. `test/db/week7.test.sql` also checks what an admin can and cannot do to each Week 7 table: create, read, update and delete where allowed, nothing where not, the constraints, and that the two views show AI output only.
 
 ```bash
 MOD_SQUAD_DIR=/path/to/Mod-Squad PGHOST=/path/to/socket PGUSER=you test/db/run.sh
@@ -140,16 +181,21 @@ app/
   (admin)/               Every admin page, behind one layout (and a check in each page)
     page.js              Dashboard
     users/ media/ votes/ Lists, detail pages and forms; media/actions.js holds the Server Actions
+    images/              The picture gallery
+    [resource]/          The eleven Week 7 sections: list, detail, new, edit, and actions.js
   login/ denied/ auth/   The only public routes, and the "signed in but not an admin" page
 components/              Header, tables' building blocks, forms, and charts/ (the SVG charts)
 lib/
   auth.js                getAdmin() and requireAdmin()
   admin-data.js          The only place that reads the database (every function checks admin first)
+  resources.js           The Week 7 sections described once (tables, columns, fields, allowed operations)
+  records.js nav.js      Form validation and database-error wording for those sections; the grouped menu
   stats.js brands.js     Dashboard statistics
   media-form.js mods.js  Validation shared with Mod Squad's parts-list rules
   supabase/              Browser, server and session-refresh clients
 proxy.js                 Redirects signed-out visitors and refreshes sessions
-supabase/admin.sql       Everything the database needs
+supabase/admin.sql       What the database needs for the admin area (Week 6)
+supabase/week7.sql       What it needs for the Week 7 sections (and week7_sample_data.sql, optional)
 test/                    Unit tests, and db/ for the database tests
 ```
 
@@ -160,3 +206,6 @@ test/                    Unit tests, and db/ for the database tests
 - "New media" creates a build by hand. It does not call the AI; Mod Squad's generator remains the place that does.
 - Deleting a build also deletes its render file from Storage. It does not delete the owner's own uploaded car photo or the Wikimedia reference link.
 - The owner picker on New media lists up to 1,000 users.
+- The Week 7 pages are read straight from the database a page at a time (25 rows, 24 pictures on the gallery). The chain mix reads at most 1,000 rows to work out shares, which is far more chains than anyone has.
+- The Images page lists a build's AI render, the owner's own photo and the reference photo, but an admin can only upload, replace or remove the AI render. The owner's photo belongs to the owner, and the database gives admins no rights over that bucket.
+- `supabase/week7.sql` was developed against a local Postgres 16 and checked in a browser against the real Row Level Security rules, but not against a live Supabase project. If a new page shows an error after you run it, check the SQL editor's output first.
